@@ -1,0 +1,63 @@
+@startuml
+skinparam componentStyle rectangle
+skinparam shadowing false
+skinparam wrapWidth 220
+skinparam maxMessageSize 220
+skinparam packageStyle rectangle
+
+package "App Componentes" {
+  [MinhaActivity] <<Activity>>
+  [SegundaActivity] <<Activity>>
+  [MeuService] <<Service>>
+  [MeuReceiver] <<BroadcastReceiver>>
+  [MeuProvider] <<ContentProvider>>
+}
+
+database "SQLite\n(Banco local)" as SQLite
+
+' ---- Fluxo principal ----
+' MinhaActivity dispara cálculo no MeuService
+[MinhaActivity] ..> [MeuService] : startService(Intent "INICIAR CÁLCULO")
+
+' MeuService processa em segundo plano e grava no SQLite
+[MeuService] --> SQLite : INSERT resultado do cálculo
+
+' Ao concluir, MeuService notifica via broadcast
+[MeuService] ..> [MeuReceiver] : sendBroadcast(Intent "CALCULO FINALIZADO")
+
+' Receiver habilita o botão "Ver resultado" na MinhaActivity
+[MeuReceiver] --> [MinhaActivity] : habilita botão "Consultar resultado"\n(via callback/Handler)
+
+' Usuário clica no botão: navega para SegundaActivity
+[MinhaActivity] ..> [SegundaActivity] : startActivity(Intent "CONSULTAR RESULTADO")
+
+' SegundaActivity consulta o resultado via ContentProvider
+[SegundaActivity] ..> [MeuProvider] : query(uri="content://br.pucpr.app.provider/resultados")
+
+' Provider lê do SQLite e devolve para a SegundaActivity
+[MeuProvider] --> SQLite : SELECT último resultado
+[MeuProvider] --> [SegundaActivity] : Cursor/Result (valor do cálculo)
+
+' ---- Notas explicativas ----
+note right of [MeuService]
+Executa o cálculo em segundo plano
+(Worker/Thread/Coroutine)
+end note
+
+note top of [MeuReceiver]
+Recebe broadcast "CALCULO FINALIZADO"
+e apenas habilita o botão na UI
+end note
+
+note bottom of [MeuProvider]
+Authority: br.pucpr.app.provider
+Tabela: resultados(_id, valor, dataHora)
+Permissões de leitura controladas
+end note
+
+' ---- Legenda ----
+legend right
+  Seta tracejada (..>): Intent / Broadcast
+  Seta sólida (-->): Operação de dados / retorno
+end legend
+@enduml
