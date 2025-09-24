@@ -5,7 +5,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 public class BancoHelper extends SQLiteOpenHelper {
+
     private static final String NOME_DB = "meu.db";
+
     private static final int VERSAO_DB = 1;
 
     public BancoHelper(Context context) {
@@ -23,3 +25,4 @@ public class BancoHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 }
+

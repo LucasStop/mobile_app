@@ -1,30 +1,30 @@
 package br.pucpr.app;
 
-import static androidx.core.content.ContextCompat.startActivity;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class MinhaActivity extends AppCompatActivity {
 
-    Button btnConsultar;
+    private Button btnIniciar, btnConsultar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
+
         setContentView(R.layout.activity_minha);
 
-        Button btnIniciar = findViewById(R.id.btnIniciar);
+        btnIniciar = findViewById(R.id.btnIniciar);
         btnConsultar = findViewById(R.id.btnConsultar);
+
+        btnConsultar.setEnabled(false);
 
         EditText edtPrimeiro = findViewById(R.id.edtPrimeiro);
         EditText edtSegundo = findViewById(R.id.edtSegundo);
@@ -35,8 +35,9 @@ public class MinhaActivity extends AppCompatActivity {
             double segundo = Double.parseDouble(edtSegundo.getText().toString());
 
             Intent intent = new Intent(this, MeuService.class);
-            intent.putExtra("Primeiro", primeiro);
-            intent.putExtra("Segundo", segundo);
+            intent.putExtra("primeiro", primeiro);
+            intent.putExtra("segundo", segundo);
+
             startService(intent);
         });
 
@@ -44,14 +45,14 @@ public class MinhaActivity extends AppCompatActivity {
             Intent intent = new Intent(this, SegundaActivity.class);
             startActivity(intent);
         });
-
     }
 
-    MeuReceiver meuReceiver;
+    private BroadcastReceiver meuReceiver;
 
     @Override
     protected void onStart() {
         super.onStart();
+
         meuReceiver = new MeuReceiver(btnConsultar);
         registerReceiver(meuReceiver, new IntentFilter("CALCULO_FINALIZADO"), Context.RECEIVER_EXPORTED);
     }
@@ -59,7 +60,7 @@ public class MinhaActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        unregisterReceiver(meuReceiver);
 
+        unregisterReceiver(meuReceiver);
     }
 }

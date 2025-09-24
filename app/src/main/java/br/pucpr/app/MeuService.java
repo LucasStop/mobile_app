@@ -15,26 +15,29 @@ public class MeuService extends Service {
         double primeiro = intent.getDoubleExtra("primeiro", 0.0);
         double segundo = intent.getDoubleExtra("segundo", 0.0);
 
-//        new Thread(() -> {
-//            try {
-        // Delay de 2 segundos
-//                Thread.sleep(2000);
-        double resultado = 0;
-        for (int i = 0; i < segundo; i++) {
-            resultado += primeiro;
-        }
+        new Thread(() -> {
+            try {
+                Thread.sleep(0);
 
-        gravarResultadoNoBanco((int) resultado);
+                double resultado = 0;
+                for (int i = 0; i < segundo; i++) {
+                    resultado += primeiro;
+                }
 
-        Intent broadcastIntent = new Intent("CALCULO_FINALIZADO");
-        sendBroadcast(broadcastIntent);
+                gravarResultadoNoBanco((int) resultado);
 
-        Log.d("AppVazio", "Resultado: " + resultado);
-        stopSelf();
-//            } catch (InterruptedException e) {
-//                throw new RuntimeException(e);
-//            }
-//        }).start();
+                Intent broadcastIntent = new Intent("CALCULO_FINALIZADO");
+                sendBroadcast(broadcastIntent);
+
+                Log.d("AppVazio", "Resultado: " + resultado);
+
+                stopSelf();
+
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }).start();
+
         return START_NOT_STICKY;
     }
 

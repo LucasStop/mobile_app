@@ -8,6 +8,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 public class MeuReceiver extends BroadcastReceiver {
+
     private final Button btnConsultar;
 
     public MeuReceiver(Button btnConsultar) {
@@ -17,7 +18,9 @@ public class MeuReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.d("AppVazio", "Intent recebida: " + intent.getAction());
+
         Toast.makeText(context, "Cálculo finalizado!", Toast.LENGTH_SHORT).show();
+
         btnConsultar.setEnabled(true);
     }
 }
